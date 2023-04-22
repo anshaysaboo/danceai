@@ -20,26 +20,19 @@ export default function Home() {
   const [feedback, setFeedback] = useState("");
 
   const getYoutubeVideo = async () => {
-    const video = await fetch("api/check-download", {
-      method: "POST",
-      headers: {
+      const video = await fetch("api/check-download", {method: "POST", headers: {
         "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ url: localStorage.getItem("url") }),
-    });
-    const { response } = await video.json();
-    const info = response.videoDetails;
-    const formats = response.formats;
-    const formatUsing = formats.find(
-      (element) => element.container == "mp4" && element.quality == "hd720"
-    );
-    const vname = info.title;
-    const url = info.video_url;
-    const itag = formatUsing.itag;
-    const format = formatUsing.container;
+      }, body: JSON.stringify({url:localStorage.getItem("url")})});
+      const {response} = await video.json();
+      const info = response.videoDetails;
+      const formats = response.formats;
+      const formatUsing = formats.find((element)=> (element.container == "mp4" && element.quality == "hd720"));
+      const vname = info.title;
+      const url = info.video_url;
+      const itag = formatUsing.itag;
+      const format = formatUsing.container;
 
-    const finalResp = await fetch("api/download", {
-      method: "POST",
+      const finalResp = await fetch("api/download", {method: "POST", 
       headers: {
         "Content-Type": "application/json",
       },
@@ -47,14 +40,24 @@ export default function Home() {
         url,
         vname,
         itag,
-        format,
-      }),
-    });
-
-    const blob = await finalResp.blob();
-    setUTubeState(URL.createObjectURL(blob));
+        format
+      })});
+      console.log(finalResp);
+      const blob = await finalResp.blob();
+      setUTubeState(URL.createObjectURL(blob));
+      setLoaded(true);
+  }
+  const useUploadedFile = ()=>{
+    setUTubeState(localStorage.getItem("url"));
     setLoaded(true);
-  };
+  }
+  useEffect(()=>{
+    if (JSON.parse(localStorage.getItem("upload")) === true) {
+      useUploadedFile();
+    } else {
+      getYoutubeVideo();
+    }
+  },[])
 
   useEffect(() => {
     const userVideo = document.getElementById("video");
@@ -199,7 +202,6 @@ export default function Home() {
       renderPrediction();
     }
   }, [videoRef]);
-
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-around ${inter.className}`}

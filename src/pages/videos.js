@@ -9,6 +9,7 @@ import { getAngles } from "@/lib/comparePoses";
 import { testPose } from "@/data/testPose";
 
 const model = poseDetection.SupportedModels.BlazePose;
+const skeleton = poseDetection.util.getAdjacentPairs(model);
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -148,21 +149,17 @@ export default function Home() {
                 userVideo
               );
 
-            if (userPoses.length > 0 && modelPoses.length > 0) {
-              const angles = getAngles(userPoses, modelPoses);
-              setFeedback(JSON.stringify(angles));
-            }
-
-            const skeleton = poseDetection.util.getAdjacentPairs(model);
-
             if (normalized.length > 0) {
+              let angleScores;
+              if (userPoses.length > 0 && modelPoses.length > 0) {
+                angleScores = getAngles(userPoses, modelPoses);
+                setFeedback(JSON.stringify(angleScores));
+              }
               drawPose(
                 userCtx,
                 normalized[0].keypoints,
                 normalized[0].keypoints3D,
-                skeleton,
-                userCanvas.width,
-                userCanvas.height
+                skeleton
               );
             }
             if (modelPoses.length > 0) {
@@ -180,9 +177,7 @@ export default function Home() {
                 modelCtx,
                 normalizedKeypoints,
                 modelPoses[0].keypoints3D,
-                skeleton,
-                modelCanvas.width,
-                modelCanvas.height
+                skeleton
               );
             }
           } catch (error) {
@@ -207,9 +202,9 @@ export default function Home() {
 
   return (
     <main
-      className={`flex min-h-screen flex-col items-center justify-between ${inter.className}`}
+      className={`flex min-h-screen flex-col items-center justify-around ${inter.className}`}
     >
-      <div className="grid grid-cols-2 justify-items-center">
+      <div className="grid grid-cols-2 justify-items-center items-center gap-12">
         <div className="relative">
           <video id="video" muted autoplay></video>
           <canvas id="canvas" className="absolute inset-0 z-50"></canvas>

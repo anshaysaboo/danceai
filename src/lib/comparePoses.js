@@ -6,10 +6,13 @@ let subVectorKeypointsSameSide = [
   ["hip", "knee"],
   ["knee", "ankle"],
 ];
-let subVectorKeypointsOppositeSide = [["shoulder", "shoulder"]];
+let subVectorKeypointsOppositeSide = [
+  ["shoulder", "shoulder"],
+  ["hip", "hip"], // hooray
+];
 let scoreThreshold = 0.8;
 let differencePercentThreshold = 0.01;
-let angleDegreeToHue = 2;
+let angleDegreeToHue = 1;
 
 function dotProduct(v1, v2) {
   //helper
@@ -132,20 +135,7 @@ export function getAngles(liveData, referenceData) {
   return angles;
 }
 
-function getColors(angles) {
-  //returns colors of angles in form of side, point1, point2: color -> ex for perfect no angle which will be green: left shoulder elbow: [120, 100, 50]
-  colors = {};
-  for (let key in angles) {
-    if (angles[key] != null) {
-      colors[key] = getColorForAngleDifference(angles[key]);
-    } else {
-      colors[key] = null;
-    }
-  }
-  return colors;
-}
-
-function getColorForAngleDifference(angle) {
+export function getColorForAngleDifference(angle) {
   //returns color of vector in HSL
   const H = Math.max(120 - angle * angleDegreeToHue, 0); //basically yellow if 30 degrees off red if 60 degrees off
   const S = 100;

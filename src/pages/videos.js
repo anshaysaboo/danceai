@@ -169,7 +169,8 @@ export default function Home() {
                 userCtx,
                 normalized[0].keypoints,
                 normalized[0].keypoints3D,
-                skeleton
+                skeleton,
+                angleScores
               );
             }
             if (modelPoses.length > 0) {
@@ -220,13 +221,7 @@ export default function Home() {
         </div>
         <div id="model-container" className="relative w-full">
           {!loaded && <p>Loading...</p>}
-          <video
-            id="model-video"
-            className="w-full"
-            src={uTubeRef}
-            autoPlay
-            controls
-          />
+          <video id="model-video" className="w-full" src={uTubeRef} controls />
           <canvas
             id="model-canvas"
             className="absolute inset-0 z-50"

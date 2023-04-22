@@ -33,34 +33,47 @@ export default function Home() {
 
   };
   const getYoutubeVideo = async () => {
-    const video = await fetch("api/check-download", {method: "POST", headers: {
+   
+      const video = await fetch("api/check-download", {method: "POST", headers: {
         "Content-Type": "application/json",
       }, body: JSON.stringify({url:localStorage.getItem("url")})});
-    const {response} = await video.json();
-    const info = response.videoDetails;
-    const formats = response.formats;
-    const formatUsing = formats.find((element)=> (element.container == "mp4" && element.quality == "hd720"));
-    const vname = info.title;
-    const url = info.video_url;
-    const itag = formatUsing.itag;
-    const format = formatUsing.container;
+      const {response} = await video.json();
+      const info = response.videoDetails;
+      const formats = response.formats;
+      const formatUsing = formats.find((element)=> (element.container == "mp4" && element.quality == "hd720"));
+      const vname = info.title;
+      const url = info.video_url;
+      const itag = formatUsing.itag;
+      const format = formatUsing.container;
 
-    const finalResp = await fetch("api/download", {method: "POST", 
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      url,
-      vname,
-      itag,
-      format
-    })});
-     console.log(finalResp);
-     finalResp.blob().then(blob=> {setUTubeState(URL.createObjectURL(blob)); setLoaded(true)});
-     
-     
+      const finalResp = await fetch("api/download", {method: "POST", 
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        url,
+        vname,
+        itag,
+        format
+      })});
+      console.log(finalResp);
+      finalResp.blob().then(blob=> {setUTubeState(URL.createObjectURL(blob)); setLoaded(true)});
+    
   }
-  useEffect(()=>{getYoutubeVideo();},[])
+  const useUploadedFile = ()=>{
+    setUTubeState(localStorage.getItem("url"));
+    setLoaded(true);
+  }
+  useEffect(()=>{
+    if (JSON.parse(localStorage.getItem("upload")) === true)
+    {
+      useUploadedFile();
+    }
+    else
+    {
+      getYoutubeVideo();
+    }
+  },[])
   return (
     <main
       className={`flex min-h-screen flex-row items-center justify-between ${inter.className}`}

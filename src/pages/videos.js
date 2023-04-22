@@ -3,10 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 
 import createDetector from "@/lib/detector";
-import { STATE } from "@/lib/params";
 import { drawPose } from "@/lib/renderer";
 import { getAngles } from "@/lib/comparePoses";
-import { testPose } from "@/data/testPose";
 
 const model = poseDetection.SupportedModels.BlazePose;
 const skeleton = poseDetection.util.getAdjacentPairs(model);
@@ -20,19 +18,26 @@ export default function Home() {
   const [feedback, setFeedback] = useState("");
 
   const getYoutubeVideo = async () => {
-      const video = await fetch("api/check-download", {method: "POST", headers: {
+    const video = await fetch("api/check-download", {
+      method: "POST",
+      headers: {
         "Content-Type": "application/json",
-      }, body: JSON.stringify({url:localStorage.getItem("url")})});
-      const {response} = await video.json();
-      const info = response.videoDetails;
-      const formats = response.formats;
-      const formatUsing = formats.find((element)=> (element.container == "mp4" && element.quality == "hd720"));
-      const vname = info.title;
-      const url = info.video_url;
-      const itag = formatUsing.itag;
-      const format = formatUsing.container;
+      },
+      body: JSON.stringify({ url: localStorage.getItem("url") }),
+    });
+    const { response } = await video.json();
+    const info = response.videoDetails;
+    const formats = response.formats;
+    const formatUsing = formats.find(
+      (element) => element.container == "mp4" && element.quality == "hd720"
+    );
+    const vname = info.title;
+    const url = info.video_url;
+    const itag = formatUsing.itag;
+    const format = formatUsing.container;
 
-      const finalResp = await fetch("api/download", {method: "POST", 
+    const finalResp = await fetch("api/download", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -40,24 +45,15 @@ export default function Home() {
         url,
         vname,
         itag,
-        format
-      })});
-      console.log(finalResp);
-      const blob = await finalResp.blob();
-      setUTubeState(URL.createObjectURL(blob));
-      setLoaded(true);
-  }
-  const useUploadedFile = ()=>{
-    setUTubeState(localStorage.getItem("url"));
+        format,
+      }),
+    });
+    const blob = await finalResp.blob();
+    setUTubeState(URL.createObjectURL(blob));
     setLoaded(true);
-  }
-  useEffect(()=>{
-    if (JSON.parse(localStorage.getItem("upload")) === true) {
-      useUploadedFile();
-    } else {
-      getYoutubeVideo();
-    }
-  },[])
+  };
+
+  const useUploadedFile = () => {};
 
   useEffect(() => {
     const userVideo = document.getElementById("video");
@@ -77,8 +73,19 @@ export default function Home() {
       ctx.canvas.height = canvas.height;
     }
 
-    async function fetchYoutube() {
-      await getYoutubeVideo();
+    async function fetchVideo() {
+      if (JSON.parse(localStorage.getItem("upload")) === true) {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        modelVideo.src = localStorage.getItem("url");
+        await new Promise((resolve) => {
+          modelVideo.onloadeddata = () => {
+            resolve(modelVideo);
+          };
+        });
+        setLoaded(true);
+      } else {
+        await getYoutubeVideo();
+      }
       modelVideo.width = modelContainer.clientWidth;
       modelVideo.height =
         (modelVideo.videoHeight / modelVideo.videoWidth) *
@@ -89,7 +96,7 @@ export default function Home() {
       modelCtx.canvas.height = modelCanvas.height;
     }
 
-    fetchYoutube();
+    fetchVideo();
 
     // VIDEO SETUP
     window.navigator.mediaDevices
@@ -206,7 +213,7 @@ export default function Home() {
     <main
       className={`flex min-h-screen flex-col items-center justify-around ${inter.className}`}
     >
-      <div className="grid grid-cols-2 justify-items-center items-center gap-12">
+      <div className="grid grid-cols-2 justify-items-center items-center gap-12 mx-12">
         <div className="relative">
           <video id="video" muted autoplay></video>
           <canvas id="canvas" className="absolute inset-0 z-50"></canvas>
@@ -232,7 +239,7 @@ export default function Home() {
           Object.keys(JSON.parse(feedback)).map((key) => {
             return (
               <p key={key}>
-                {key}: {Math.round(JSON.parse(feedback)[key][0])}
+                {key}: {Math.round(JSON.parse(feedback)[key])}
               </p>
             );
           })}

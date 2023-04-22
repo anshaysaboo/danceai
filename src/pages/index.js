@@ -1,67 +1,24 @@
 import { Inter } from 'next/font/google'
-import React, {useEffect, useRef, useState} from 'react'
-import FileSaver from 'file-saver';
-
+import React, { useState } from 'react'
+import { useRouter } from 'next/router'
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
-  const videoRef = useRef(null);
-  const [uTubeRef, setUTubeState] = useState("");
-  useEffect(() => {
-    getVideo();
-  }, [videoRef]);
-  const videoConfig = {
-    'audio': false,
-    'video': {
-      facingMode: 'user',
-      width: '500',
-    }
-  };
-  const getVideo = () => {
-    navigator.mediaDevices
-      .getUserMedia(videoConfig)
-      .then(stream => {
-        let video = videoRef.current;
-        video.srcObject = stream;
-        video.play();
-      })
-      .catch(err => {
-        console.error("error:", err);
-      });
-  };
-  const getYoutubeVideo = async () => {
-    const video = await fetch("api/check-download");
-    const {response} = await video.json();
-    const info = response.videoDetails;
-    const formats = response.formats;
-    const formatUsing = formats.find((element)=> (element.container == "mp4" && element.quality == "hd720"));
-    const vname = info.title;
-    const url = info.video_url;
-    const itag = formatUsing.itag;
-    const format = formatUsing.container;
-
-    const finalResp = await fetch("api/download", {method: "POST", 
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      url,
-      vname,
-      itag,
-      format
-    })});
-     console.log(finalResp);
-     finalResp.blob().then(blob=> setUTubeState(URL.createObjectURL(blob)));
-     
-     
+  const router = useRouter();
+  const [url, setUrl] = useState("");
+  const sendURL = () => {
+    localStorage.setItem("url", url);
+    router.push({pathname: "/videos", query:{url}});
   }
-  useEffect(()=>{getYoutubeVideo();},[])
   return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
-    > 
-      <video ref={videoRef} className="flipped-x"/>
-      <video src={uTubeRef} autoPlay/>
+    <main className='h-screen w-screen bg-yellow flex flex-col'>
+        <input className='bg-white rounded-md border border-black text-black' type='text' placeholder='https://www.youtube.com/...'
+        value={url} onChange={(e)=>setUrl(e.target.value)}/>
+        <button className="block border px-4 py-2 w-1/2 mt-5 md:mt-0 md:w-auto mx-auto hover:bg-white hover:border-blue-dark hover:text-blue-dark text-sm rounded-full bg-blue-light text-white border-white transition-colors"
+        onClick={()=>sendURL()}>
+            Use Video
+        </button>
     </main>
   )
 }
+

@@ -16,7 +16,7 @@ export default function Home() {
     'audio': false,
     'video': {
       facingMode: 'user',
-      width: '500',
+      width: '800',
     }
   };
   const getVideo = () => {
@@ -63,10 +63,12 @@ export default function Home() {
   useEffect(()=>{getYoutubeVideo();},[])
   return (
     <main
-      className={`flex min-h-screen flex-row items-center justify-between p-8 ${inter.className}`}
+      className={`flex min-h-screen flex-row items-center justify-between ${inter.className}`}
     > 
-      <video ref={videoRef} className="flipped-x"/>
-      <video src={uTubeRef} autoPlay/>
+    <div className='w-full flex flex-row h-1/2'>
+      <video ref={videoRef} className="flipped-x w-1/2 h-auto"/>
+      <video src={uTubeRef} className='w-1/2 h-auto' autoPlay/>
+    </div>
     </main>
   )
 }

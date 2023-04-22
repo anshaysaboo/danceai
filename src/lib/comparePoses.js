@@ -7,7 +7,7 @@ let subVectorKeypoints = [
   ["knee", "ankle"],
 ];
 let scoreThreshold = 0.8;
-let differencePercentThreshold = 0.000001;
+let differencePercentThreshold = 0.01;
 let angleDegreeToHue = 2;
 
 function dotProduct(v1, v2) {
@@ -26,11 +26,7 @@ function getAngleBetweenVectors(v1, v2) {
   let denominator = getMagnitude(v1) * getMagnitude(v2);
   if (
     Math.abs(numerator - denominator) /
-      Math.min(
-        Math.abs(numerator),
-
-        denominator
-      ) <
+      Math.min(Math.abs(numerator), denominator) <
     differencePercentThreshold
   ) {
     return 0; // same numerator and denominator (so v1 and v2 are same vector)
@@ -57,7 +53,7 @@ function createSubVector(keyPoint1, keyPoint2) {
 export function getAngles(liveData, referenceData) {
   //returns angles of liveData relative to referenceData in form of side, point1, point2: angle, color -> ex for perfect no angle which will be green: left shoulder elbow: 0, [120, 100, 50]
   let angles = {};
-  var liveDataDict = extractKeypoints3D(liveData).reduce(function (
+  let liveDataDict = extractKeypoints3D(liveData).reduce(function (
     map,
     keypoint
   ) {
@@ -65,7 +61,7 @@ export function getAngles(liveData, referenceData) {
     return map;
   },
   {});
-  var referenceDataDict = extractKeypoints3D(referenceData).reduce(function (
+  let referenceDataDict = extractKeypoints3D(referenceData).reduce(function (
     map,
     keypoint
   ) {
@@ -87,11 +83,11 @@ export function getAngles(liveData, referenceData) {
         referenceDataDict[keyPoint2Name]
       );
       let anglesName =
-        leftRightPrepends[j] +
+        leftRightPrepends[(1 + j) % 2] +
         " " +
         subVectorKeypoints[i][0] +
         " " +
-        subVectorKeypoints[i][1];
+        subVectorKeypoints[i][1]; //have to flip left and right
       if (
         liveVector.score > scoreThreshold &&
         referenceVector.score > scoreThreshold

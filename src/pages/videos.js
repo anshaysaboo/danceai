@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { Inter, Abril_Fatface } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 
@@ -10,6 +10,11 @@ const model = poseDetection.SupportedModels.BlazePose;
 const skeleton = poseDetection.util.getAdjacentPairs(model);
 
 const inter = Inter({ subsets: ["latin"] });
+
+const Abril = Abril_Fatface({
+  weight: ["400"],
+style: ["normal"],
+subsets: ["latin", "latin-ext"]});
 
 export default function Home() {
   const videoRef = useRef(null);
@@ -212,8 +217,11 @@ export default function Home() {
   }, [videoRef]);
   return (
     <main
-      className={`flex min-h-screen flex-col items-center justify-around ${inter.className}`}
+      className={`flex min-h-screen flex-col items-center justify-around bg-background ${inter.className}`}
     >
+      <div className="flex w-full h-1/12">
+        <h1 className={"text-pink-pop text-5xl ml-5 " + Abril.className}>dance.ai</h1>
+      </div>
       <div className="grid grid-cols-2 justify-items-center items-center gap-12 mx-12">
         <div className="relative">
           <video id="video" muted autoplay></video>

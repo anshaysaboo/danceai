@@ -137,8 +137,25 @@ export function getAngles(liveData, referenceData) {
 
 export function getColorForAngleDifference(angle) {
   //returns color of vector in HSL
-  const H = Math.max(120 - angle * angleDegreeToHue, 0); //basically yellow if 30 degrees off red if 60 degrees off
+  const H = Math.max(120 - angle * angleDegreeToHue, 0);
   const S = 100;
   const L = 50;
   return [H, S, L];
+}
+
+export function getScores(angles) {
+  console.log(angles);
+  let totScore = 0;
+  let maxScore = 0;
+  const anglesKeys = Object.keys(angles);
+  //returns scores of angles in form of side, point1, point2: score, color -> ex for perfect no angle which will be green: left shoulder elbow: 1, [120, 100, 50]
+  for (let i = 0; i < anglesKeys.length; i++){
+    let angle = angles[anglesKeys[i]];
+    if (angle != null){
+      let score = 1 - Math.abs(angle / 180);
+      totScore += score;
+      maxScore += 1;
+    }
+  }
+  return totScore/maxScore;
 }

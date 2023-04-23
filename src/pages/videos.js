@@ -5,7 +5,8 @@ import { FaPlay, FaPause } from "react-icons/fa";
 
 import createDetector from "@/lib/detector";
 import { drawPose } from "@/lib/renderer";
-import { getAngles } from "@/lib/comparePoses";
+import { getAngles, getScore } from "@/lib/comparePoses";
+import { FEEDBACK_INTERVAL } from "@/lib/config";
 
 const model = poseDetection.SupportedModels.BlazePose;
 const skeleton = poseDetection.util.getAdjacentPairs(model);
@@ -70,8 +71,6 @@ export default function Home() {
     setUTubeState(URL.createObjectURL(blob));
     setLoaded(true);
   };
-
-  const useUploadedFile = () => {};
 
   useEffect(() => {
     const userVideo = document.getElementById("video");
@@ -138,6 +137,10 @@ export default function Home() {
 
     // MOTION DETECTION
     async function beginDetecting() {
+      let timer = 0;
+      let totalScore = 0,
+        scoreCounter = 0;
+
       let userDetector = await createDetector();
       let modelDetector = await createDetector();
 
@@ -209,6 +212,13 @@ export default function Home() {
                 skeleton
               );
             }
+
+            // Return score
+            if (userPoses.length > 0 && modelPoses.length > 0) {
+              let angleScores = getAngles(userPoses, modelPoses);
+              let score = getScore(angleScores);
+              return score;
+            }
           } catch (error) {
             userDetector.dispose();
             modelDetector.dispose();
@@ -218,11 +228,30 @@ export default function Home() {
             console.error(error);
           }
         }
+
+        return null;
       }
 
       async function renderPrediction() {
-        await renderResult();
-        console.log("reloaded");
+        const start = performance.now();
+        const score = await renderResult();
+        const end = performance.now();
+
+        if (!modelVideoRef.current.paused) {
+          timer += end - start;
+          if (score != null) {
+            totalScore += score;
+            scoreCounter++;
+          }
+        }
+
+        if (timer > FEEDBACK_INTERVAL) {
+          const average = totalScore / scoreCounter;
+          totalScore = 0;
+          scoreCounter = 0;
+          timer = 0;
+          console.log(average);
+        }
         window.requestAnimationFrame(renderPrediction);
       }
 

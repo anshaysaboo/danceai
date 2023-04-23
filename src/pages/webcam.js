@@ -70,7 +70,6 @@ export default function Home() {
 
             if (poses.length > 0) {
               const angles = getAngles(poses, testPose);
-              console.log(angles);
               setFeedback(JSON.stringify(angles));
             }
 
@@ -92,6 +91,7 @@ export default function Home() {
             console.error(error);
           }
         }
+        return null;
       }
 
       async function renderPrediction() {

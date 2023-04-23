@@ -1,3 +1,5 @@
+import { SCORE_VALIDITY_THRESHOLD } from "./config";
+
 //GLOBAL VARIABLES
 let subVectorKeypointsSameSide = [
   ["wrist", "elbow"],
@@ -10,7 +12,7 @@ let subVectorKeypointsOppositeSide = [
   ["shoulder", "shoulder"],
   ["hip", "hip"], // hooray
 ];
-let scoreThreshold = 0.8;
+let scoreThreshold = SCORE_VALIDITY_THRESHOLD;
 let differencePercentThreshold = 0.01;
 let angleDegreeToHue = 1;
 
@@ -143,19 +145,29 @@ export function getColorForAngleDifference(angle) {
   return [H, S, L];
 }
 
-export function getScores(angles) {
-  console.log(angles);
+export function getScore(angles) {
   let totScore = 0;
-  let maxScore = 0;
+  let totWeights = 0;
   const anglesKeys = Object.keys(angles);
+  const weightless = new Set([
+    "left_shoulder-right_shoulder",
+    "left_shoulder-left_hip",
+    "right_shoulder-right_hip",
+    "left_hip-right_hip",
+  ]);
   //returns scores of angles in form of side, point1, point2: score, color -> ex for perfect no angle which will be green: left shoulder elbow: 1, [120, 100, 50]
-  for (let i = 0; i < anglesKeys.length; i++){
+  for (let i = 0; i < anglesKeys.length; i++) {
     let angle = angles[anglesKeys[i]];
-    if (angle != null){
+    if (angle != null) {
       let score = 1 - Math.abs(angle / 180);
-      totScore += score;
-      maxScore += 1;
+      if (weightless.has(anglesKeys[i])) {
+        totScore += 0.2 * score;
+        totWeights += 0.2;
+      } else {
+        totScore += score;
+        totWeights += 1;
+      }
     }
   }
-  return totScore/maxScore;
+  return totScore / totWeights;
 }

@@ -96,7 +96,7 @@ export default function Home() {
               return (
                 <video
                   key={i}
-                  className="rounded bg-white/40"
+                  className="rounded bg-white/40 w-[100px]"
                   src={`img/${i}.mp4`}
                   autoPlay
                   muted
@@ -203,7 +203,7 @@ export default function Home() {
               return (
                 <video
                   key={i}
-                  className="rounded bg-white/40"
+                  className="rounded bg-white/40 w-[100px]"
                   src={`img/${i}.mp4`}
                   autoPlay
                   muted

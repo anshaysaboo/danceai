@@ -15,6 +15,7 @@ let subVectorKeypointsOppositeSide = [
 let scoreThreshold = SCORE_VALIDITY_THRESHOLD;
 let differencePercentThreshold = 0.01;
 let angleDegreeToHue = 1;
+let exponentialMultiplier = 3;
 
 function dotProduct(v1, v2) {
   //helper
@@ -159,7 +160,13 @@ export function getScore(angles) {
   for (let i = 0; i < anglesKeys.length; i++) {
     let angle = angles[anglesKeys[i]];
     if (angle != null) {
-      let score = 1 - Math.abs(angle / 180);
+      let score = 0;
+      if (angle > 25){ //punish larger angles
+        score = getExponentionalScore(angle);
+      }
+      else{
+        score = getLinearScore(angle);
+      }
       if (weightless.has(anglesKeys[i])) {
         totScore += 0.2 * score;
         totWeights += 0.2;
@@ -170,4 +177,14 @@ export function getScore(angles) {
     }
   }
   return totScore / totWeights;
+}
+
+function getExponentionalScore(angle) {
+  //helper
+  return Math.exp((180 - exponentialMultiplier * Math.abs(angle))/ 180)/Math.E; //between 0 and 1
+}
+
+function getLinearScore(angle){
+  //helper
+  return (180 - Math.abs(angle))/180; //between 0 and 1
 }

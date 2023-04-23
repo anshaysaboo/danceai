@@ -14,3 +14,53 @@
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
 }
+
+#permas {
+  /* added */
+  overflow: hidden;
+  overflow-x: hidden;
+  width: max-content;
+  white-space: nowrap;
+  animation-name: scroll;
+  animation-duration: 30s;
+  animation-iteration-count: infinite;
+  animation-timing-function:linear;
+}
+#permas video {
+  height: 100%;
+  overflow: hidden;
+}
+@keyframes scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-30%);
+  }
+}
+
+#permas2 {
+
+  overflow: hidden;
+  overflow-x: hidden;
+  width: max-content;
+  white-space: nowrap;
+  animation-name: scroll2;
+  animation-duration: 30s;
+  animation-iteration-count: infinite;
+  animation-timing-function:linear;
+}
+
+#permas2 video {
+  height: 100%;
+  overflow: hidden;
+}
+
+@keyframes scroll2 {
+  0% {
+    transform: translateX(-30%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}

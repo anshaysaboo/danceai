@@ -51,7 +51,7 @@ export default function Home() {
         >
           <div className="h-1/6 w-full justify-center flex mt-12">
             <h1 className={"text-pink-pop text-5xl " + Abril.className}>
-              dance.ai
+              MotionMuse
             </h1>
           </div>
           <h2 className="text-2xl text-pink-100 mx-auto mt-12 font-semibold w-2/3">

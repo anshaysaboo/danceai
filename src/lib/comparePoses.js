@@ -161,10 +161,10 @@ export function getScore(angles) {
     let angle = angles[anglesKeys[i]];
     if (angle != null) {
       let score = 0;
-      if (angle > 25){ //punish larger angles
+      if (angle > 35) {
+        //punish larger angles
         score = getExponentionalScore(angle);
-      }
-      else{
+      } else {
         score = getLinearScore(angle);
       }
       if (weightless.has(anglesKeys[i])) {
@@ -181,10 +181,12 @@ export function getScore(angles) {
 
 function getExponentionalScore(angle) {
   //helper
-  return Math.exp((180 - exponentialMultiplier * Math.abs(angle))/ 180)/Math.E; //between 0 and 1
+  return (
+    Math.exp((180 - exponentialMultiplier * Math.abs(angle)) / 180) / Math.E
+  ); //between 0 and 1
 }
 
-function getLinearScore(angle){
+function getLinearScore(angle) {
   //helper
-  return (180 - Math.abs(angle))/180; //between 0 and 1
+  return (180 - Math.abs(angle)) / 180; //between 0 and 1
 }

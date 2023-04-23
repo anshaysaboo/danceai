@@ -22,7 +22,7 @@ export function drawPose(ctx, keypoints, keypoints3d, skeleton, angles) {
 
   ctx.globalCompositeOperation = "destination-over";
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.lineWidth = 6;
+  ctx.lineWidth = 5;
 
   // Render each keypoint
   keypoints.forEach(({ name, score, x, y }) => {

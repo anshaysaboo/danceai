@@ -326,11 +326,11 @@ export default function Home() {
       className={`flex min-h-screen flex-col items-center justify-between bg-background ${inter.className}`}
     >
       <div className="flex flex-col w-full justify-center items-center py-12">
-        <h1 className={"text-pink-pop text-5xl ml-5 " + Abril.className}>
+        <h1 className={"text-pink-pop text-6xl ml-5 " + Abril.className}>
           MotionMuse
         </h1>
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        <a href="/" className="text-white mt-4">
+        <a href="/" className="text-white mt-4 hover:underline">
           Choose a new video
         </a>
       </div>
@@ -344,7 +344,7 @@ export default function Home() {
           <div id="model-container" className="relative w-fit">
             <video
               id="model-video"
-              className="w-auto max-w-full max-h-[45vh]"
+              className="w-auto max-w-full max-h-[45vh] bg-white/40"
               src={uTubeRef}
               controls
               ref={modelVideoRef}

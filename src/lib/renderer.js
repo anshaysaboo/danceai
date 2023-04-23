@@ -1,6 +1,7 @@
 import { getColorForAngleDifference } from "./comparePoses";
+import { SCORE_VALIDITY_THRESHOLD } from "./config";
 
-const THRESHOLD = 0.5;
+const THRESHOLD = SCORE_VALIDITY_THRESHOLD;
 
 const EXCLUDED_POINTS = new Set([
   "nose",
@@ -21,7 +22,7 @@ export function drawPose(ctx, keypoints, keypoints3d, skeleton, angles) {
 
   ctx.globalCompositeOperation = "destination-over";
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.lineWidth = 6;
+  ctx.lineWidth = 5;
 
   // Render each keypoint
   keypoints.forEach(({ name, score, x, y }) => {
@@ -37,7 +38,6 @@ export function drawPose(ctx, keypoints, keypoints3d, skeleton, angles) {
   });
 
   // Render skeleton
-  console.log(angles);
   skeleton.forEach(([i, j]) => {
     const kp1 = keypoints[i];
     const kp2 = keypoints[j];

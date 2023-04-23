@@ -1,16 +1,17 @@
-import { Inter } from 'next/font/google'
-import { Abril_Fatface } from 'next/font/google'
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
-const inter = Inter({ subsets: ['latin'] })
+import { Inter } from "next/font/google";
+import { Abril_Fatface } from "next/font/google";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+const inter = Inter({ subsets: ["latin"] });
 import Image from "next/image";
 import Link from 'next/link'
 import Head from 'next/head'
 
 const Abril = Abril_Fatface({
   weight: ["400"],
-style: ["normal"],
-subsets: ["latin", "latin-ext"]});
+  style: ["normal"],
+  subsets: ["latin", "latin-ext"],
+});
 
 export default function Home() {
   
@@ -19,17 +20,16 @@ export default function Home() {
   const sendURL = () => {
     localStorage.setItem("url", url);
     localStorage.setItem("upload", false);
-    router.push({pathname: "/videos", query:{url}});
-  }
+    router.push({ pathname: "/videos", query: { url } });
+  };
   const handleFile = (e) => {
     const video = e.target.files[0];
-    console.log(video);
     const videoUrl = URL.createObjectURL(video);
     setUrl(videoUrl);
     localStorage.setItem("url", videoUrl);
     localStorage.setItem("upload", true);
     router.push("/videos");
-  }
+  };
   return (
     <>
     <Head>
@@ -129,4 +129,3 @@ export default function Home() {
     </>
   );
 }
-

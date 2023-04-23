@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
 import * as poseDetection from "@tensorflow-models/pose-detection";
+import { FaPlay, FaPause } from "react-icons/fa";
 
 import createDetector from "@/lib/detector";
 import { drawPose } from "@/lib/renderer";
@@ -12,10 +13,27 @@ const skeleton = poseDetection.util.getAdjacentPairs(model);
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const videoRef = useRef(null);
+  const modelVideoRef = useRef();
   const [uTubeRef, setUTubeState] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [paused, setPaused] = useState(true);
+
+  const updatePlaybackRate = (rate) => {
+    modelVideoRef.current.playbackRate = rate;
+    setPlaybackRate(rate);
+  };
+
+  const updatePaused = () => {
+    if (paused) {
+      modelVideoRef.current.play();
+      setPaused(false);
+    } else {
+      modelVideoRef.current.pause();
+      setPaused(true);
+    }
+  };
 
   const getYoutubeVideo = async () => {
     const video = await fetch("api/check-download", {
@@ -204,12 +222,18 @@ export default function Home() {
 
       async function renderPrediction() {
         await renderResult();
+        console.log("reloaded");
         window.requestAnimationFrame(renderPrediction);
       }
 
+      // Setup handling for seeking video
+      modelVideo.onseeked = function () {
+        renderPrediction();
+      };
+
       renderPrediction();
     }
-  }, [videoRef]);
+  }, []);
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-around ${inter.className}`}
@@ -219,17 +243,45 @@ export default function Home() {
           <video id="video" muted autoplay></video>
           <canvas id="canvas" className="absolute inset-0 z-50"></canvas>
         </div>
-        <div id="model-container" className="relative w-full">
-          {!loaded && <p>Loading...</p>}
-          <video id="model-video" className="w-full" src={uTubeRef} controls />
-          <canvas
-            id="model-canvas"
-            className="absolute inset-0 z-50"
-            style={{ pointerEvents: "none" }}
-          ></canvas>
+        <div className="relative w-full">
+          {!loaded && <p>Loading your video...</p>}
+          <div id="model-container" className="relative w-full">
+            <video
+              id="model-video"
+              className="w-full"
+              src={uTubeRef}
+              controls
+              ref={modelVideoRef}
+            />
+            <canvas
+              id="model-canvas"
+              className="absolute inset-0 z-50"
+              style={{ pointerEvents: "none" }}
+            ></canvas>
+          </div>
+          <div className="w-full flex justify-between mt-5">
+            <div>
+              <button onClick={() => updatePaused()} className="text-2xl">
+                {paused ? <FaPlay /> : <FaPause />}
+              </button>
+            </div>
+            <div className="flex flex-row gap-4">
+              {[0.25, 0.5, 1, 1.5, 1.75].map((val) => {
+                return (
+                  <button
+                    onClick={() => updatePlaybackRate(val)}
+                    key={val}
+                    className={`${val === playbackRate ? "font-bold" : ""}`}
+                  >
+                    {val}x
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
-      <div>
+      {/* <div>
         {feedback != "" &&
           Object.keys(JSON.parse(feedback)).map((key) => {
             return (
@@ -238,7 +290,7 @@ export default function Home() {
               </p>
             );
           })}
-      </div>
+      </div> */}
     </main>
   );
 }

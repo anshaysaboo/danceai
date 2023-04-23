@@ -1,0 +1,2 @@
+export const SCORE_VALIDITY_THRESHOLD = 0.5;
+export const FEEDBACK_INTERVAL = 4;

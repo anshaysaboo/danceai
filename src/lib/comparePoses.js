@@ -1,3 +1,5 @@
+import { SCORE_VALIDITY_THRESHOLD } from "./config";
+
 //GLOBAL VARIABLES
 let subVectorKeypointsSameSide = [
   ["wrist", "elbow"],
@@ -10,9 +12,10 @@ let subVectorKeypointsOppositeSide = [
   ["shoulder", "shoulder"],
   ["hip", "hip"], // hooray
 ];
-let scoreThreshold = 0.8;
+let scoreThreshold = SCORE_VALIDITY_THRESHOLD;
 let differencePercentThreshold = 0.01;
 let angleDegreeToHue = 1;
+let exponentialMultiplier = 3;
 
 function dotProduct(v1, v2) {
   //helper
@@ -137,8 +140,53 @@ export function getAngles(liveData, referenceData) {
 
 export function getColorForAngleDifference(angle) {
   //returns color of vector in HSL
-  const H = Math.max(120 - angle * angleDegreeToHue, 0); //basically yellow if 30 degrees off red if 60 degrees off
+  const H = Math.max(120 - angle * angleDegreeToHue, 0);
   const S = 100;
   const L = 50;
   return [H, S, L];
+}
+
+export function getScore(angles) {
+  let totScore = 0;
+  let totWeights = 0;
+  const anglesKeys = Object.keys(angles);
+  const weightless = new Set([
+    "left_shoulder-right_shoulder",
+    "left_shoulder-left_hip",
+    "right_shoulder-right_hip",
+    "left_hip-right_hip",
+  ]);
+  //returns scores of angles in form of side, point1, point2: score, color -> ex for perfect no angle which will be green: left shoulder elbow: 1, [120, 100, 50]
+  for (let i = 0; i < anglesKeys.length; i++) {
+    let angle = angles[anglesKeys[i]];
+    if (angle != null) {
+      let score = 0;
+      if (angle > 35) {
+        //punish larger angles
+        score = getExponentionalScore(angle);
+      } else {
+        score = getLinearScore(angle);
+      }
+      if (weightless.has(anglesKeys[i])) {
+        totScore += 0.2 * score;
+        totWeights += 0.2;
+      } else {
+        totScore += score;
+        totWeights += 1;
+      }
+    }
+  }
+  return totScore / totWeights;
+}
+
+function getExponentionalScore(angle) {
+  //helper
+  return (
+    Math.exp((180 - exponentialMultiplier * Math.abs(angle)) / 180) / Math.E
+  ); //between 0 and 1
+}
+
+function getLinearScore(angle) {
+  //helper
+  return (180 - Math.abs(angle)) / 180; //between 0 and 1
 }

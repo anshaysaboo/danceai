@@ -28,7 +28,6 @@ export default function Home() {
         maxPoses: STATE.modelConfig.maxPoses,
         flipHorizontal: false,
       });
-      console.log(poses);
     }
     boo();
   }, []);

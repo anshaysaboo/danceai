@@ -77,6 +77,23 @@ export default function Home() {
     setLoaded(true);
   };
 
+  const showFeedback = (score) => {
+    const feedbackContainer = document.getElementById("feedback");
+    let color, text;
+    if (score > 0.8) {
+      color = "#00ff00";
+      text = "Amazing!";
+    } else if (score > 0.6) {
+      color = "#ff5000";
+      text = "Alright!";
+    } else {
+      color = "#ff0000";
+      text = "You fucking suck!";
+    }
+    feedbackContainer.innerText = text;
+    feedbackContainer.style.color = color;
+  };
+
   useEffect(() => {
     const userVideo = document.getElementById("video");
     const modelVideo = document.getElementById("model-video");
@@ -238,6 +255,7 @@ export default function Home() {
       }
 
       async function renderPrediction() {
+        // SCORE HANDLING
         const start = performance.now();
         const score = await renderResult();
         const end = performance.now();
@@ -256,6 +274,7 @@ export default function Home() {
           scoreCounter = 0;
           timer = 0;
           console.log(average);
+          showFeedback(average);
         }
         window.requestAnimationFrame(renderPrediction);
       }
@@ -318,6 +337,10 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <div
+        id="feedback"
+        className="w-full flex flex-row justify-center text-center text-[50px] font-bold"
+      ></div>
       {/* <div>
         {feedback != "" &&
           Object.keys(JSON.parse(feedback)).map((key) => {

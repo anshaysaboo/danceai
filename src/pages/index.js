@@ -14,7 +14,6 @@ const Abril = Abril_Fatface({
 });
 
 export default function Home() {
-  
   const router = useRouter();
   const [url, setUrl] = useState("");
   const sendURL = () => {
